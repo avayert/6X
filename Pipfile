@@ -1,0 +1,12 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+curious = { git = 'https://github.com/Fuyukai/curious.git' }
+multio = { git = 'https://github.com/theelous3/multio.git' }
+curio = { git = 'https://github.com/dabeaz/curio.git' }
