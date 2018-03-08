@@ -6,7 +6,6 @@ import multio
 
 from credentials import discord, twitter
 
-
 multio.init('curio')
 
 client = Client(discord.token)
