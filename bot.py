@@ -63,7 +63,7 @@ async def parse_tweets(ctx, message):
         if tweet['is_quote_status']:
             await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
 
-        with suppress(Exception):
+        with suppress(KeyError):
             replied_to = await get_tweet(tweet['in_reply_to_status_id'])
             await message.channel.messages.send(tweet_fmt.format(replied_to))
 
