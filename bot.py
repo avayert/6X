@@ -14,7 +14,7 @@ tweet_pattern = re.compile(r'https?://twitter.com/\S+/(\d+)')
 
 async def get_tweet(id):
     resp = await asks.get(
-        'https://api.twitter.com/1.1/statuses/show.json',
+        uri='https://api.twitter.com/1.1/statuses/show.json',
         headers={'Authorization': twitter.token},
         params={'id': id}
     )
