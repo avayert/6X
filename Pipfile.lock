@@ -31,9 +31,7 @@
             "git": "https://github.com/dabeaz/curio.git"
         },
         "discord-curious": {
-            "editable": true,
-            "git": "https://github.com/Fuyukai/curious.git",
-            "ref": "334cb75e83dc1fc4a8ae3cbf3d3a814b9d768999"
+            "git": "https://github.com/Fuyukai/curious.git"
         },
         "multio": {
             "git": "https://github.com/theelous3/multio.git"
