@@ -7,6 +7,6 @@ name = "pypi"
 
 [packages]
 
-discord-curious = {git = "https://github.com/Fuyukai/curious.git", editable = true}
+discord-curious = {git = "https://github.com/Fuyukai/curious.git"}
 multio = { git = 'https://github.com/theelous3/multio.git' }
 curio = { git = 'https://github.com/dabeaz/curio.git' }
