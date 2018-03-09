@@ -10,7 +10,7 @@ from curious.commands import CommandsManager, command
 from curious.core.client import Client
 from operator import methodcaller
 
-from credentials import discord, twitter
+from twitterimages.credentials import discord, twitter
 
 multio.init('curio')
 
