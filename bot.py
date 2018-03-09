@@ -35,6 +35,10 @@ async def parse_tweets(ctx, message):
         for image in images:
             await message.channel.messages.send(image['media_url_https'])
 
+        if tweet['is_quote_status']:
+            fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
+            await message.channel.messages.send(fmt.format(tweet['quoted_status']))
+
         # This is awful please ignore it
         reply = tweet['in_reply_to_status_id']
         if reply:
