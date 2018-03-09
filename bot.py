@@ -2,6 +2,7 @@ import re
 
 import asks
 import multio
+from contextlib import suppress
 from curious.core.client import Client
 
 from credentials import discord, twitter
@@ -10,6 +11,7 @@ multio.init('curio')
 
 client = Client(discord.token)
 tweet_pattern = re.compile(r'https?://twitter.com/\S+/(\d+)')
+tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
 
 
 async def get_tweet(id):
@@ -36,16 +38,11 @@ async def parse_tweets(ctx, message):
             await message.channel.messages.send(image['media_url_https'])
 
         if tweet['is_quote_status']:
-            fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
-            await message.channel.messages.send(fmt.format(tweet['quoted_status']))
+            await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
 
-        # This is awful please ignore it
-        reply = tweet['in_reply_to_status_id']
-        if reply:
-            replied_to = await get_tweet(reply)
-
-            fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
-            await message.channel.messages.send(fmt.format(replied_to))
+        with suppress(Exception):
+            replied_to = await get_tweet(tweet['in_reply_to_status_id'])
+            await message.channel.messages.send(tweet_fmt.format(replied_to))
 
 
 if __name__ == '__main__':
