@@ -1,14 +1,11 @@
 import re
-
-import asks
-import multio
 from contextlib import suppress
 
-from curio import subprocess
-from curious import Embed
-from curious.commands import CommandsManager, command
+import asks
+import curio
+import multio
+from curious.commands import CommandsManager
 from curious.core.client import Client
-from operator import methodcaller
 
 from twitterimages.credentials import discord, twitter
 
@@ -19,22 +16,6 @@ manager = CommandsManager.with_client(client, command_prefix='t!')
 
 tweet_pattern = re.compile(r'https?://twitter.com/\S+/(\d+)')
 tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
-
-
-@command()
-async def update(ctx):
-    # TODO maybe allow arguments for better control (using argparse?)
-    process = subprocess.Popen('git pull'.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = map(methodcaller('decode'), await process.communicate())
-
-    # TODO output might be over 2000 characters...?
-    description = '```diff\n{0}\n{1}```'.format(stdout, stderr)
-    # relies on there not being both stdout and stderr output, let's see
-    embed = Embed(colour=0xcc0000 if stderr else 0x4BB543, description=description)
-
-    await ctx.channel.messages.send(embed=embed)
-
-manager.add_command(update)
 
 
 async def get_tweet(id):
@@ -48,6 +29,7 @@ async def get_tweet(id):
 
 @client.event('message_create')
 async def parse_tweets(ctx, message):
+    # TODO maybe move this to a fitting plugin later
     if message.author.user.bot:
         return
 
@@ -68,5 +50,11 @@ async def parse_tweets(ctx, message):
             await message.channel.messages.send(tweet_fmt.format(replied_to))
 
 
+async def main():
+    await manager.load_plugins_from('plugins.core')
+
+    await client.run_async()
+
+
 if __name__ == '__main__':
-    client.run()
+    curio.run(main)
