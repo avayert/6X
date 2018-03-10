@@ -42,3 +42,14 @@ class Core(Plugin):
         # TODO don't hard-code the emote
         await ctx.channel.messages.send('<:exit:421816310909894670> Shutting down...')
         await self.client.kill()
+
+    @command()
+    async def changelog(self, ctx,  amount: int = 3):
+        """
+        Shows the latest changes in the git repository.
+        """
+        amount = max(min(10, amount), 1)
+        process = subprocess.Popen(f'git log -n {amount}'.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, _ = map(methodcaller('decode'), await process.communicate())
+
+        await ctx.channel.messages.send(f'```{stdout}```')
