@@ -2,7 +2,6 @@ import re
 from contextlib import suppress
 
 import asks
-import curio
 import multio
 from curious.commands import CommandsManager
 from curious.core.client import Client
@@ -51,10 +50,6 @@ async def parse_tweets(ctx, message):
 
 
 async def main():
-    await manager.load_plugins_from('plugins.core')
+    await manager.load_plugins_from('twitterimages.plugins.core')
 
     await client.run_async()
-
-
-if __name__ == '__main__':
-    curio.run(main)
