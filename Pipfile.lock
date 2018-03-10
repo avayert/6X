@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3c58f6142371984ab390c21b5dbfaffa4562ea416fb1387544a072f4f878f1ca"
+            "sha256": "8ca00efa3345776c5013e468cf27332445395af315306329a367bb6b0ccf3182"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -33,8 +33,34 @@
         "discord-curious": {
             "git": "https://github.com/Fuyukai/curious.git"
         },
+        "gitdb2": {
+            "hashes": [
+                "sha256:cf9a4b68e8c4da8d42e48728c944ff7af2d8c9db303ac1ab32eac37aa4194b0e",
+                "sha256:b60e29d4533e5e25bb50b7678bbc187c8f6bcff1344b4f293b2ba55c85795f09"
+            ],
+            "version": "==2.0.3"
+        },
+        "gitpython": {
+            "hashes": [
+                "sha256:b8367c432de995dc330b5b146c5bfdc0926b8496e100fda6692134e00c0dcdc5",
+                "sha256:ad61bc25deadb535b047684d06f3654c001d9415e1971e51c9c20f5b510076e9"
+            ],
+            "version": "==2.1.8"
+        },
         "multio": {
-            "git": "https://github.com/theelous3/multio.git"
+            "hashes": [
+                "sha256:f61bc6cf0ee8ea0ba32d5b9ae5ae1cadaebc39b6635a9b3d54142ded78164fe3",
+                "sha256:53fd38f5d90a5f1a5d2db507b73c474ef851f5465fab27ffabe401591808258a",
+                "sha256:a6219395a1f84605c9041f0a7e8a529b989557c8a95920ddcd29fbed1d721758"
+            ],
+            "version": "==0.2.1"
+        },
+        "smmap2": {
+            "hashes": [
+                "sha256:b78ee0f1f5772d69ff50b1cbdb01b8c6647a8354f02f23b488cf4b2cfc923956",
+                "sha256:c7530db63f15f09f8251094b22091298e82bf6c699a6b8344aaaef3f2e1276c3"
+            ],
+            "version": "==2.0.3"
         }
     },
     "develop": {}
