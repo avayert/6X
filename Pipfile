@@ -7,7 +7,7 @@ name = "pypi"
 
 [packages]
 
-discord-curious = {git = "https://github.com/Fuyukai/curious.git"}
-curio = { git = 'https://github.com/dabeaz/curio.git' }
-multio = "*"
+curio = "*"
+discord-curious = "*"
 gitpython = "*"
+multio = "*"
