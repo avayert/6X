@@ -3,7 +3,7 @@ from curious.commands import condition, Context
 
 def is_owner():
     async def predicate(ctx: Context):
-        if not hasattr(ctx.bot, 'owner_if'):
+        if not hasattr(ctx.bot, 'owner_id'):
             # The type hint implies it only accepts an integer but setting it to
             # None will internally get the AppInfo corresponding to your own bot.
             #
