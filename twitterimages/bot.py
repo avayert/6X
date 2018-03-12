@@ -4,6 +4,7 @@ from contextlib import suppress
 import asks
 import multio
 from curious.commands import CommandsManager
+from curious.commands.exc import ConditionsFailedError
 from curious.core.client import Client
 
 from twitterimages.credentials import discord, twitter
@@ -47,6 +48,15 @@ async def parse_tweets(ctx, message):
         with suppress(KeyError):
             replied_to = await get_tweet(tweet['in_reply_to_status_id'])
             await message.channel.messages.send(tweet_fmt.format(replied_to))
+
+
+@client.event('command_error')
+async def silence_condition_failure(event_ctx, ctx, error):
+    if isinstance(error, ConditionsFailedError):
+        # shut !!
+        return
+
+    raise error
 
 
 async def main():

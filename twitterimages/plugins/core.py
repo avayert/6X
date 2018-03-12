@@ -4,6 +4,8 @@ from curio import subprocess
 from curious import Embed
 from curious.commands import Plugin, command
 
+from twitterimages.plugins.utils.decorators import is_owner
+
 
 class Core(Plugin):
     """
@@ -11,6 +13,7 @@ class Core(Plugin):
     """
 
     @command()
+    @is_owner()
     async def update(self, ctx):
         """
         Downloads the latest version of the bot.
@@ -35,6 +38,7 @@ class Core(Plugin):
         await ctx.channel.messages.send(embed=embed)
 
     @command(aliases='exit kill shutdown'.split())
+    @is_owner()
     async def quit(self, ctx):
         """
         Disconnects the bot from Discord.
@@ -44,7 +48,7 @@ class Core(Plugin):
         await self.client.kill()
 
     @command()
-    async def changelog(self, ctx,  amount: int = 3):
+    async def changelog(self, ctx, amount: int = 3):
         """
         Shows the latest changes in the git repository.
         """
