@@ -55,11 +55,11 @@
         },
         "discord-curious": {
             "hashes": [
-                "sha256:8ef14cce3ea259c27ad864d93ee8ec10292209f2ee9c43fe8b82b77c3f20749e",
-                "sha256:bf2d7b39867880c5e215626ca7fb3893c64d5aee546b543d3ce117ac71a76f8c",
-                "sha256:0f165e6810e43e2f8fd903190ed2ccd1ed62b377ecb9439d52bd134bb53845cc"
+                "sha256:ee6773d08b6e44a88f348bdebb8b6e235feb61918b5f9f6740d161abeb532bf1",
+                "sha256:fd4ef1ec1aae65b4a90f244eb64ea1d551e8a8666509315f59ed0975e10b8f0a",
+                "sha256:2558a88bbb8fb52b1749cffdf89e8c3ecfe2fd9c5bc84eb846a44ed0b9159ebc"
             ],
-            "version": "==0.7.0"
+            "version": "==0.7.1"
         },
         "gitdb2": {
             "hashes": [
