@@ -42,7 +42,10 @@ async def parse_tweets(ctx, message):
         for image in images:
             await message.channel.messages.send(image['media_url_https'])
 
-        if tweet['is_quote_status']:
+        # Twitter API docs say this field is only nullable but of course
+        # sometimes it doesn't exist because great API tbh.
+        is_quote = tweet.get('is_quote_status')
+        if is_quote:
             await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
 
         with suppress(KeyError):
