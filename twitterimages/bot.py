@@ -1,5 +1,4 @@
 import re
-from contextlib import suppress
 
 import asks
 import multio
@@ -24,7 +23,14 @@ async def get_tweet(id):
         headers={'Authorization': twitter.token},
         params={'id': id}
     )
-    return resp.json()
+    json = resp.json()
+
+    errors = json.get('errors')
+    if errors:
+        message = ' '.join('Code {code} {message}'.format(**error) for error in errors)
+        raise ValueError(message)
+    else:
+        return json
 
 
 @client.event('message_create')
@@ -34,7 +40,12 @@ async def parse_tweets(ctx, message):
         return
 
     for tweet in tweet_pattern.finditer(message.content):
-        tweet = await get_tweet(tweet.group(1))
+        try:
+            tweet = await get_tweet(tweet.group(1))
+        except ValueError as e:
+            # TODO logging or something
+            print(str(e))
+            continue
 
         # Ignore first images because discord should show it
         images = tweet.get('extended_entities', {'media': []})['media'][1:]
@@ -42,14 +53,12 @@ async def parse_tweets(ctx, message):
         for image in images:
             await message.channel.messages.send(image['media_url_https'])
 
-        # Twitter API docs say this field is only nullable but of course
-        # sometimes it doesn't exist because great API tbh.
-        is_quote = tweet.get('is_quote_status')
-        if is_quote:
+        if tweet['is_quote_status']:
             await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
 
-        with suppress(KeyError):
-            replied_to = await get_tweet(tweet['in_reply_to_status_id'])
+        reply = tweet['in_reply_to_status_id']
+        if reply:
+            replied_to = await get_tweet(reply)
             await message.channel.messages.send(tweet_fmt.format(replied_to))
 
 
