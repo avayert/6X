@@ -13,7 +13,7 @@ multio.init('curio')
 client = Client(discord.token)
 manager = CommandsManager.with_client(client, command_prefix='t!')
 
-tweet_pattern = re.compile(r'https?://twitter\.com/\S+/(\d+)')
+tweet_pattern = re.compile(r'https?://(?:mobile\.)?twitter\.com/\S+/(\d+)')
 tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
 
 
