@@ -56,11 +56,6 @@ async def parse_tweets(ctx, message):
         if tweet['is_quote_status']:
             await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
 
-        reply = tweet['in_reply_to_status_id']
-        if reply:
-            replied_to = await get_tweet(reply)
-            await message.channel.messages.send(tweet_fmt.format(replied_to))
-
 
 @client.event('command_error')
 async def silence_condition_failure(event_ctx, ctx, error):
