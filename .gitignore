@@ -2,3 +2,5 @@ twitterimages/credentials.py
 
 __pycache__/
 .idea/
+
+*.log
