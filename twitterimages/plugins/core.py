@@ -1,10 +1,37 @@
+import time
 from operator import methodcaller
 
+import psutil
 from curio import subprocess
 from curious import Embed
 from curious.commands import Plugin, command
 
 from twitterimages.plugins.utils.decorators import is_owner
+
+intervals = (
+    ('week', 604_800),  # 60 * 60 * 24 * 7
+    ('day',   86_400),  # 60 * 60 * 24
+    ('hour',   3_600),  # 60 * 60
+    ('minute',    60),
+    ('second',     1),
+)
+
+
+def display_time(seconds):
+    """
+    Turns seconds into human readable time.
+    """
+    message = ''
+
+    for name, amount in intervals:
+        n, seconds = divmod(seconds, amount)
+
+        if n == 0:
+            continue
+
+        message += f'{n} {name + "s" * (n != 1)}'
+
+    return message.strip()
 
 
 class Core(Plugin):
@@ -57,3 +84,12 @@ class Core(Plugin):
         stdout, _ = map(methodcaller('decode'), await process.communicate())
 
         await ctx.channel.messages.send(f'```{stdout}```')
+
+    @command()
+    async def uptime(self, ctx):
+        """
+        Shows how long the bot has been online for.
+        """
+        seconds = int(time.time() - psutil.Process().create_time())
+        legible = display_time(seconds)
+        await ctx.channel.messages.send(legible)
