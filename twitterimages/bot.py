@@ -1,3 +1,4 @@
+import logging
 import re
 
 import asks
@@ -12,6 +13,8 @@ multio.init('curio')
 
 client = Client(discord.token)
 manager = CommandsManager.with_client(client, command_prefix='t!')
+
+logger = logging.getLogger('TwitterImages')
 
 tweet_pattern = re.compile(r'(?:^|\W)https?://(?:mobile\.)?twitter\.com/\S+/(\d+)(?:$|\W)')
 tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
@@ -42,9 +45,8 @@ async def parse_tweets(ctx, message):
     for tweet in tweet_pattern.finditer(message.content):
         try:
             tweet = await get_tweet(tweet.group(1))
-        except ValueError as e:
-            # TODO logging or something
-            print(str(e))
+        except ValueError:
+            logger.exception('ValueError raised in parse_tweets')
             continue
 
         # Ignore first images because discord should show it
