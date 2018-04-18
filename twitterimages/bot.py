@@ -3,7 +3,7 @@ import re
 
 import asks
 import multio
-from curious.commands import CommandsManager
+from curious.commands import CommandsManager, Context
 from curious.commands.exc import ConditionsFailedError
 from curious.core.client import Client
 
@@ -62,7 +62,11 @@ async def parse_tweets(ctx, message):
 @client.event('command_error')
 async def silence_condition_failure(event_ctx, ctx, error):
     if isinstance(error, ConditionsFailedError):
-        # shut !!
+        logging.info(
+            '{author.name}#{author.discriminator} ({author.user.id}) '
+            'Tried to use the command `{0.command_name}`'
+            .format(ctx, error, author=ctx.author.user)
+        )
         return
 
     raise error
