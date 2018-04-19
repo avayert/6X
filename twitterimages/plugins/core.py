@@ -29,7 +29,7 @@ def display_time(seconds):
         if n == 0:
             continue
 
-        message += f'{n} {name + "s" * (n != 1)}'
+        message += f'{n} {name + "s" * (n != 1)} '
 
     return message.strip()
 
