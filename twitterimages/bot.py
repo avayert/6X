@@ -3,6 +3,7 @@ import re
 
 import asks
 import multio
+from curious import EventContext
 from curious.commands import CommandsManager, Context
 from curious.commands.exc import ConditionsFailedError
 from curious.core.client import Client
@@ -20,7 +21,7 @@ tweet_pattern = re.compile(r'(?:^|\W)https?://(?:mobile\.)?twitter\.com/\S+/(\d+
 tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
 
 
-async def get_tweet(id):
+async def get_tweet(id: str) -> dict:
     resp = await asks.get(
         uri='https://api.twitter.com/1.1/statuses/show.json',
         headers={'Authorization': twitter.token},
@@ -37,7 +38,7 @@ async def get_tweet(id):
 
 
 @client.event('message_create')
-async def parse_tweets(ctx, message):
+async def parse_tweets(ctx: Context, message):
     # TODO maybe move this to a fitting plugin later
     if message.author.user.bot:
         return
@@ -60,7 +61,7 @@ async def parse_tweets(ctx, message):
 
 
 @client.event('command_error')
-async def silence_condition_failure(event_ctx, ctx, error):
+async def silence_condition_failure(event_ctx: EventContext, ctx: Context, error):
     if isinstance(error, ConditionsFailedError):
         logging.info(
             '{author.name}#{author.discriminator} ({author.user.id}) '

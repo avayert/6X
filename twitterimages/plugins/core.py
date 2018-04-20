@@ -4,7 +4,7 @@ from operator import methodcaller
 import psutil
 from curio import subprocess
 from curious import Embed
-from curious.commands import Plugin, command
+from curious.commands import Plugin, command, Context
 
 from twitterimages.plugins.utils.decorators import is_owner
 
@@ -17,7 +17,7 @@ intervals = (
 )
 
 
-def display_time(seconds):
+def display_time(seconds: int) -> str:
     """
     Turns seconds into human readable time.
     """
@@ -41,7 +41,7 @@ class Core(Plugin):
 
     @command()
     @is_owner()
-    async def update(self, ctx):
+    async def update(self, ctx: Context):
         """
         Downloads the latest version of the bot.
 
@@ -66,7 +66,7 @@ class Core(Plugin):
 
     @command(aliases='exit kill shutdown'.split())
     @is_owner()
-    async def quit(self, ctx):
+    async def quit(self, ctx: Context):
         """
         Disconnects the bot from Discord.
         """
@@ -75,7 +75,7 @@ class Core(Plugin):
         await self.client.kill()
 
     @command()
-    async def changelog(self, ctx, amount: int = 3):
+    async def changelog(self, ctx: Context, amount: int = 3):
         """
         Shows the latest changes in the git repository.
         """
@@ -86,7 +86,7 @@ class Core(Plugin):
         await ctx.channel.messages.send(f'```{stdout}```')
 
     @command()
-    async def uptime(self, ctx):
+    async def uptime(self, ctx: Context):
         """
         Shows how long the bot has been online for.
         """
