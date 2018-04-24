@@ -6,7 +6,7 @@ from curio import subprocess
 from curious import Embed
 from curious.commands import Plugin, command, Context
 
-from sixx.plugins.utils.decorators import is_owner
+from sixx.plugins.utils import is_owner
 
 intervals = (
     ('week', 604_800),  # 60 * 60 * 24 * 7

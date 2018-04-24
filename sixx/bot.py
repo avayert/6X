@@ -21,7 +21,7 @@ async def silence_condition_failure(event_ctx: EventContext, ctx: Context, error
         logger.info(
             '{author.name}#{author.discriminator} ({author.user.id}) '
             'Tried to use the command `{0.command_name}`'
-            .format(ctx, error, author=ctx.author.user)
+                .format(ctx, error, author=ctx.author.user)
         )
         return
 
@@ -31,5 +31,6 @@ async def silence_condition_failure(event_ctx: EventContext, ctx: Context, error
 async def main():
     await manager.load_plugins_from('sixx.plugins.core')
     await manager.load_plugins_from('sixx.plugins.twitter')
+    await manager.load_plugins_from('sixx.plugins.colours')
 
     await client.run_async()
