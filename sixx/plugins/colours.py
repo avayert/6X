@@ -1,6 +1,5 @@
 from curio import async_thread
 from curious.commands import Context, Plugin, command
-from io import BytesIO
 from wand.color import Color
 from wand.image import Image
 
@@ -15,8 +14,6 @@ class Colours(Plugin):
     @staticmethod
     @async_thread
     def construct_image(colour: Colour):
-        buffer = BytesIO()
-
         with Color(str(colour)) as color, Image(width=100, height=100, background=color) as image:
             return image.make_blob(format='png')
 
