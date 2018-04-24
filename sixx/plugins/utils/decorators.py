@@ -1,9 +1,5 @@
 from curious.commands import condition, Context
 
-__all__ = [
-    'is_owner'
-]
-
 
 def is_owner():
     async def predicate(ctx: Context):
