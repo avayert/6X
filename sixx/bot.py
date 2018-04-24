@@ -5,7 +5,7 @@ from curious.commands import CommandsManager, Context
 from curious.commands.exc import ConditionsFailedError
 from curious.core.client import Client
 
-from twitterimages.credentials import discord
+from sixx.credentials import discord
 
 multio.init('curio')
 
@@ -29,7 +29,7 @@ async def silence_condition_failure(event_ctx: EventContext, ctx: Context, error
 
 
 async def main():
-    await manager.load_plugins_from('twitterimages.plugins.core')
-    await manager.load_plugins_from('twitterimages.plugins.twitter')
+    await manager.load_plugins_from('sixx.plugins.core')
+    await manager.load_plugins_from('sixx.plugins.twitter')
 
     await client.run_async()

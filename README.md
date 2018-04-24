@@ -1,7 +1,7 @@
-TwitterImages
+6X
 ================
 
-A discord bot to post the missing context of tweets.
+A discord bot I made for personal utilities.
 
 [Add the bot!](https://discordapp.com/api/oauth2/authorize?client_id=422078492335800321&permissions=314368&scope=bot)
 

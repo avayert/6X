@@ -4,7 +4,7 @@ import re
 from curious import event
 from curious.commands import Context, Plugin
 
-from twitterimages.credentials import twitter
+from sixx.credentials import twitter
 
 tweet_pattern = re.compile(r'(?:^|\W)https?://(?:mobile\.)?twitter\.com/\S+/(\d+)(?:$|\W)')
 tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
