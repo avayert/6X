@@ -48,8 +48,13 @@ class Colours(Plugin):
             x, y = font.getsize('#000000')
             x, y = (100 - x) // 2, (100 - y) // 2
 
-            draw.text((x, y), str(old_colour), align='center', font=font)
-            draw.text((x + 100, y), str(new_colour), align='center', font=font)
+            def get_colour(colour):
+                if colour.contrast(Colour(0x000000)) >= 15:  # Arbitrary number here
+                    return 0, 0, 0
+                return 255, 255, 255
+
+            draw.text((x, y), str(old_colour).upper(), align='center', font=font, fill=get_colour(old_colour))
+            draw.text((x + 100, y), str(new_colour).upper(), align='center', font=font, fill=get_colour(new_colour))
 
             buffer = BytesIO()
             img.save(buffer, 'png')
