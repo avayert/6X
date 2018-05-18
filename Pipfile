@@ -9,9 +9,7 @@ python_version = '3.6'
 [packages]
 curio = "*"
 discord-curious = "*"
-GitPython = "*"
 multio = "*"
 psutil = "*"
-Wand = "*"
 "ruamel.yaml" = "*"
 Pillow = "*"

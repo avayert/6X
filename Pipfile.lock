@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e4a3f9c2817e4fa07d6a4329bb71120b665ca406553388feacce1a2604fcf3cc"
+            "sha256": "0c35db06ec5296ec5e6f7a7d61db675ca08e6b67004b08d38ee02d1f2091949a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -44,21 +44,6 @@
             ],
             "index": "pypi",
             "version": "==0.7.7"
-        },
-        "gitdb2": {
-            "hashes": [
-                "sha256:b60e29d4533e5e25bb50b7678bbc187c8f6bcff1344b4f293b2ba55c85795f09",
-                "sha256:cf9a4b68e8c4da8d42e48728c944ff7af2d8c9db303ac1ab32eac37aa4194b0e"
-            ],
-            "version": "==2.0.3"
-        },
-        "gitpython": {
-            "hashes": [
-                "sha256:05069e26177c650b3cb945dd543a7ef7ca449f8db5b73038b465105673c1ef61",
-                "sha256:c47cc31af6e88979c57a33962cbc30a7c25508d74a1b3a19ec5aa7ed64b03129"
-            ],
-            "index": "pypi",
-            "version": "==2.1.9"
         },
         "h11": {
             "hashes": [
@@ -230,13 +215,6 @@
             ],
             "version": "==1.11.0"
         },
-        "smmap2": {
-            "hashes": [
-                "sha256:b78ee0f1f5772d69ff50b1cbdb01b8c6647a8354f02f23b488cf4b2cfc923956",
-                "sha256:c7530db63f15f09f8251094b22091298e82bf6c699a6b8344aaaef3f2e1276c3"
-            ],
-            "version": "==2.0.3"
-        },
         "typing-inspect": {
             "hashes": [
                 "sha256:05955deb124e3d86f288324c586b9ba4e8a09d6be398d28731552110c0f1acb9",
@@ -244,14 +222,6 @@
                 "sha256:ffdcbf86f35bd3cbe9aec92ee6ebc6886413524f9d4539856b5e2d26b39b40c9"
             ],
             "version": "==0.3.1"
-        },
-        "wand": {
-            "hashes": [
-                "sha256:28e0454c9d16d69c5d5034918d96320d8f9f1377b4fdaf4944eec2f938c74704",
-                "sha256:fb50d0ad4cad995f0b59b13f76bced22682ab80b4299084a2c3c535b225850c9"
-            ],
-            "index": "pypi",
-            "version": "==0.4.4"
         }
     },
     "develop": {}
