@@ -36,19 +36,23 @@ class Colours(Plugin):
             print('channel not found')
             return
 
+        # one colour is 100x100 -> 200x100 is the image size
         with Image.new('RGB', (200, 100)) as img:
             draw = Draw(img)  # lol no context manager
+
             old_colour = Colour(old.colour)
             new_colour = Colour(new.colour)
+
             draw.rectangle([0, 0, 100, 100], fill=old_colour.rgb)
             draw.rectangle([100, 0, 200, 100], fill=new_colour.rgb)
 
             # 🙃 thanks pillow for SUCKING
-            font = truetype('VCR_OSD_MONO.ttf', size=20)
+            font = truetype('VCR_OSD_MONO.ttf', size=20)  # need a font with this name in your system fonts or it breaks
             x, y = font.getsize('#000000')
-            x, y = (100 - x) // 2, (100 - y) // 2
+            x, y = (100 - x) // 2, (100 - y) // 2  # top left corner of the text
 
             def get_colour(colour):
+                # sees if contrast between black and colour x is high
                 if colour.contrast(Colour(0x000000)) >= 15:  # Arbitrary number here
                     return 0, 0, 0
                 return 255, 255, 255
@@ -56,8 +60,9 @@ class Colours(Plugin):
             draw.text((x, y), str(old_colour).upper(), align='center', font=font, fill=get_colour(old_colour))
             draw.text((x + 100, y), str(new_colour).upper(), align='center', font=font, fill=get_colour(new_colour))
 
+            # save image so we can send it
             buffer = BytesIO()
             img.save(buffer, 'png')
-            buffer.seek(0)
+            buffer.seek(0)  # needs to be here or it'll send a 0-byte file
 
             await channel.messages.upload(buffer, filename='cool.png')
