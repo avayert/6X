@@ -51,11 +51,6 @@ class Colours(Plugin):
         return [result(colour, name) for colour, name in
                 nsmallest(n, self.colours.items(), key=lambda item: (abs(item[0].distance(colour))))]
 
-    @command()
-    async def test1(self, ctx: Context):
-        near = self.get_colour_names(Colour(52479))
-        await ctx.channel.messages.send(str(near))
-
     @event('role_update')
     async def colour_changed(self, ctx: EventContext, old: Role, new: Role):
         # We only care about colour changes
