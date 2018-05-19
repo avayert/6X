@@ -1,24 +1,29 @@
+from collections import namedtuple
+
 from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
 from curious import EventContext, Role, event
-from curious.commands import Plugin
+from curious.commands import Context, Plugin, command
+from heapq import nsmallest
 from io import BytesIO
 from ruamel.yaml import YAML
 from typing import Dict
 
 from sixx.plugins.utils import Colour
 
+# side width of the square shown in the role colour thing
 SIDE_WIDTH = 200
 
-# Font used for the before/after role colour thing.
+# Fonts used for the before/after role colour thing.
 # NOTE: You will need a font file with this name in your system fonts.
 # Either change the name of some other font or just change the
 # string below if it's broken (good design I know)
-FONT = truetype('VCR_OSD_MONO.ttf', size=int(SIDE_WIDTH * (5 / 2) * 0.75))
+FONT_BIG = truetype('VCR_OSD_MONO.ttf', size=int(SIDE_WIDTH * (5 / 2) * 0.75))
+FONT_SMALL = truetype('VCR_OSD_MONO.ttf', size=int(SIDE_WIDTH * (5 / 4) * 0.75))
 
 
-def load_colours() -> Dict[str, int]:
+def load_colours() -> Dict[Colour, str]:
     """
     Loads the name-value combinations from a YAML file.
 
@@ -30,7 +35,9 @@ def load_colours() -> Dict[str, int]:
     yaml = YAML()
 
     with open('sixx/data/colours.yml', 'r') as f:
-        return yaml.load(f)
+        data = yaml.load(f)
+        data = {Colour(colour): name for colour, name in data.items()}
+        return data
 
 
 class Colours(Plugin):
@@ -38,6 +45,16 @@ class Colours(Plugin):
     Colour related commands.
     """
     colours = load_colours()
+
+    def get_colour_names(self, colour: Colour, *, n=5):
+        result = namedtuple('result', 'colour name')
+        return [result(colour, name) for colour, name in
+                nsmallest(n, self.colours.items(), key=lambda item: (abs(item[0].distance(colour))))]
+
+    @command()
+    async def test1(self, ctx: Context):
+        near = self.get_colour_names(Colour(52479))
+        await ctx.channel.messages.send(str(near))
 
     @event('role_update')
     async def colour_changed(self, ctx: EventContext, old: Role, new: Role):
@@ -67,14 +84,20 @@ class Colours(Plugin):
                 with Image.new('RGBA', (SIDE_WIDTH * 10, SIDE_WIDTH * 10)) as aa_img:
                     aa_draw = Draw(aa_img)
 
-                    x, y = FONT.getsize('#000000')
+                    x, y = FONT_BIG.getsize('#000000')
                     x, y = (SIDE_WIDTH * 10 - x) // 2, (SIDE_WIDTH * 10 - y) // 2  # top left corner of the text
 
                     # This makes text black if the contrast between black text and the background colour
                     # is high because white text becomes unreadable on light coloured backgrounds.
                     font_colour = (0, 0, 0) if Colour(0x000000).contrast(colour) >= 15 else (255, 255, 255)
 
-                    aa_draw.text((x, y), str(colour).upper(), font=FONT, fill=font_colour)
+                    aa_draw.text((x, y), str(colour).upper(), font=FONT_BIG, fill=font_colour)
+
+                    nearest_colour = self.get_colour_names(colour).pop().name
+                    x, y = FONT_SMALL.getsize(nearest_colour)
+                    x, y = (SIDE_WIDTH * 10 - x) // 2, (SIDE_WIDTH * 10 - y) // 4 * 3
+
+                    aa_draw.text((x, y), nearest_colour, font=FONT_SMALL, fill=font_colour)
 
                     aa_img = aa_img.resize((SIDE_WIDTH, SIDE_WIDTH), resample=Image.ANTIALIAS)
                     img.paste(aa_img, (0 + offset, 0), aa_img)

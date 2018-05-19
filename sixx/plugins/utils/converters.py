@@ -56,6 +56,7 @@ class Colour:
 
         Based on information from https://www.w3.org/TR/WCAG20-TECHS/G18.html
         """
+
         def convert(value):
             value /= 255
 
@@ -81,6 +82,12 @@ class Colour:
 
     def __str__(self):
         return f'#{self.value:06x}'
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __hash__(self):
+        return hash(self.value)
 
 
 def convert_hex_colour(annotation, ctx: Context, arg: str) -> Colour:
