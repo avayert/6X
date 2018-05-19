@@ -52,6 +52,38 @@ class Colours(Plugin):
         return [result(colour, name) for colour, name in
                 nsmallest(n, self.colours.items(), key=lambda item: item[0].distance(colour))]
 
+    @command()
+    async def nearest(self, ctx: Context, colour: Colour, n: int = 1):
+        # TODO text clipping, maybe allow hex as an optional arg?
+        nearest = self.get_colour_names(colour, n=n)
+
+        with Image.new('RGBA', (SIDE_WIDTH, int(SIDE_WIDTH / 5 * len(nearest)))) as img:
+            draw = Draw(img)
+
+            for rectangle_index, (colour, name) in enumerate(nearest):
+                offset = int(rectangle_index * SIDE_WIDTH / 5)
+
+                draw.rectangle([0, 0 + offset, SIDE_WIDTH, SIDE_WIDTH / 5 + offset], fill=colour.rgb)
+
+                with Image.new('RGBA', (SIDE_WIDTH * 10, int((SIDE_WIDTH / 5) * 10))) as aa_img:
+                    aa_draw = Draw(aa_img)
+
+                    x, y = FONT_SMALL.getsize(name)
+                    x, y = (SIDE_WIDTH * 10 - x) / 2, ((SIDE_WIDTH / 5) * 10 - y) / 2
+
+                    font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
+
+                    aa_draw.text((x, y), name, font=FONT_SMALL, fill=font_colour)
+
+                    aa_img = aa_img.resize((SIDE_WIDTH, int(SIDE_WIDTH / 5)), resample=Image.ANTIALIAS)
+                    img.paste(aa_img, (0, 0 + offset), aa_img)
+
+            buffer = BytesIO()
+            img.save(buffer, 'png')
+            buffer.seek(0)  # needs to be here or it'll send a 0-byte file
+
+            await ctx.channel.messages.upload(buffer, filename='cool.png')
+
     @event('role_update')
     async def colour_changed(self, ctx: EventContext, old: Role, new: Role):
         # We only care about colour changes
@@ -81,7 +113,7 @@ class Colours(Plugin):
                     aa_draw = Draw(aa_img)
 
                     x, y = FONT_BIG.getsize('#000000')
-                    x, y = (SIDE_WIDTH * 10 - x) // 2, (SIDE_WIDTH * 10 - y) // 2  # top left corner of the text
+                    x, y = (SIDE_WIDTH * 10 - x) / 2, (SIDE_WIDTH * 10 - y) / 2  # top left corner of the text
 
                     # This makes text black if the contrast between black text and the background colour
                     # is high because white text becomes unreadable on light coloured backgrounds.
