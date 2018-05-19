@@ -75,6 +75,7 @@ class Colour:
 
         Based on information from https://www.w3.org/TR/WCAG20-TECHS/G18.html
         """
+        # TODO make x.contrast(y) the same as y.contrast(x) instead of x/y y/x
         return (self.luminance() + 0.05) / (other.luminance() + 0.05)
 
     def __repr__(self):

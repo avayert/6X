@@ -89,7 +89,7 @@ class Colours(Plugin):
 
                     # This makes text black if the contrast between black text and the background colour
                     # is high because white text becomes unreadable on light coloured backgrounds.
-                    font_colour = (0, 0, 0) if Colour(0x000000).contrast(colour) >= 15 else (255, 255, 255)
+                    font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
 
                     aa_draw.text((x, y), str(colour).upper(), font=FONT_BIG, fill=font_colour)
 
