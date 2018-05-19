@@ -12,6 +12,8 @@ from typing import Dict
 
 from sixx.plugins.utils import Colour
 
+result = namedtuple('result', 'colour name')
+
 # side width of the square shown in the role colour thing
 SIDE_WIDTH = 200
 
@@ -47,9 +49,8 @@ class Colours(Plugin):
     colours = load_colours()
 
     def get_colour_names(self, colour: Colour, *, n=5):
-        result = namedtuple('result', 'colour name')
         return [result(colour, name) for colour, name in
-                nsmallest(n, self.colours.items(), key=lambda item: (abs(item[0].distance(colour))))]
+                nsmallest(n, self.colours.items(), key=lambda item: item[0].distance(colour))]
 
     @event('role_update')
     async def colour_changed(self, ctx: EventContext, old: Role, new: Role):
@@ -88,7 +89,7 @@ class Colours(Plugin):
 
                     aa_draw.text((x, y), str(colour).upper(), font=FONT_BIG, fill=font_colour)
 
-                    nearest_colour = self.get_colour_names(colour).pop().name
+                    nearest_colour = self.get_colour_names(colour, n=1).pop().name
                     x, y = FONT_SMALL.getsize(nearest_colour)
                     x, y = (SIDE_WIDTH * 10 - x) // 2, (SIDE_WIDTH * 10 - y) // 4 * 3
 
