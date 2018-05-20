@@ -45,9 +45,9 @@ def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None
     with Image.new('RGBA', (size_x * 10, size_y * 10)) as image:
         draw = Draw(image)
 
-        for index, string in enumerate(textwrap.wrap(text, wrap_width)):
+        for index, string in enumerate(textwrap.wrap(text, wrap_width), start=-1):
             width, height = font.getsize(string)
-            pos = (size_x * 10 - width) / offset_x ** -1, (size_y * 10 - height * (index * -1)) / offset_y ** -1
+            pos = (size_x * 10 - width) / offset_x ** -1, (size_y * 10 - height * -index) / offset_y ** -1
             draw.text(pos, string, font=font, **draw_kwargs)
 
         return image.resize((size_x, size_y), resample=Image.ANTIALIAS)
