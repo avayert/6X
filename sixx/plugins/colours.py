@@ -97,10 +97,10 @@ class Colours(Plugin):
                 # This makes text black if the contrast between black text and the background colour
                 # is high because white text becomes unreadable on light coloured backgrounds.
                 font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
-                nearest_colour = self.get_colour_names(colour, n=1).pop().name.upper()
+                nearest_colour = self.get_colour_names(colour, n=1).pop().name
 
                 name = antialiased_text(nearest_colour, FONT_SMALL, SIDE_WIDTH, fill=font_colour, offset_y=3 / 4)
-                code = antialiased_text(str(colour), FONT_BIG, SIDE_WIDTH, fill=font_colour)
+                code = antialiased_text(str(colour).upper(), FONT_BIG, SIDE_WIDTH, fill=font_colour)
 
                 img.paste(name, (0 + offset, 0), name)
                 img.paste(code, (0 + offset, 0), code)
