@@ -100,7 +100,7 @@ class Colours(Plugin):
                 nearest_colour = self.get_colour_names(colour, n=1).pop().name
 
                 name = antialiased_text(nearest_colour, FONT_SMALL, SIDE_WIDTH, fill=font_colour, offset_y=3 / 4,
-                                        wrap_width=19)
+                                        wrap_width=18)
                 code = antialiased_text(str(colour).upper(), FONT_BIG, SIDE_WIDTH, fill=font_colour)
 
                 img.paste(name, (0 + offset, 0), name)
