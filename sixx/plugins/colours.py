@@ -6,11 +6,11 @@ from PIL.ImageFont import truetype
 from curious import EventContext, Role, event
 from curious.commands import Context, Plugin, command
 from heapq import nsmallest
-from io import BytesIO
 from ruamel.yaml import YAML
 from typing import Dict
 
 from sixx.plugins.utils import Colour
+from sixx.plugins.utils.pillow import save_image
 
 result = namedtuple('result', 'colour name')
 
@@ -78,9 +78,7 @@ class Colours(Plugin):
                     aa_img = aa_img.resize((SIDE_WIDTH, int(SIDE_WIDTH / 5)), resample=Image.ANTIALIAS)
                     img.paste(aa_img, (0, 0 + offset), aa_img)
 
-            buffer = BytesIO()
-            img.save(buffer, 'png')
-            buffer.seek(0)  # needs to be here or it'll send a 0-byte file
+            buffer = save_image(img)
 
             await ctx.channel.messages.upload(buffer, filename='cool.png')
 
@@ -131,8 +129,6 @@ class Colours(Plugin):
                     img.paste(aa_img, (0 + offset, 0), aa_img)
 
             # save image so we can send it
-            buffer = BytesIO()
-            img.save(buffer, 'png')
-            buffer.seek(0)  # needs to be here or it'll send a 0-byte file
+            buffer = save_image(img)
 
             await channel.messages.upload(buffer, filename='cool.png')
