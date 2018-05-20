@@ -1,5 +1,7 @@
 from collections import namedtuple
+from itertools import cycle
 
+import random
 from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
@@ -99,7 +101,8 @@ class Colours(Plugin):
                 font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
                 nearest_colour = self.get_colour_names(colour, n=1).pop().name
 
-                name = antialiased_text(nearest_colour, FONT_SMALL, SIDE_WIDTH, fill=font_colour, offset_y=3 / 4)
+                name = antialiased_text(nearest_colour, FONT_SMALL, SIDE_WIDTH, fill=font_colour, offset_y=3 / 4,
+                                        wrap_width=19)
                 code = antialiased_text(str(colour).upper(), FONT_BIG, SIDE_WIDTH, fill=font_colour)
 
                 img.paste(name, (0 + offset, 0), name)

@@ -1,7 +1,7 @@
 """
 I hate pillow.
 """
-
+import textwrap
 from PIL import Image, ImageFont
 from PIL.ImageDraw import Draw
 from io import BytesIO
@@ -22,7 +22,7 @@ def save_image(image: Image, *, format='png') -> BytesIO:
 
 
 def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None, *, offset_x: float = 1 / 2,
-                     offset_y: float = 1 / 2, **draw_kwargs) -> Image:
+                     offset_y: float = 1 / 2, wrap_width: int = 50, **draw_kwargs) -> Image:
     """
     Returns a new image with antialiased text that you can then paste on your source image.
 
@@ -36,6 +36,7 @@ def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None
     :param offset_x: How far away from the top the text will be
     :param offset_y: How far away from the left the text will be
     :param draw_kwargs: Additional keyword arguments to the `draw` method
+    :param wrap_width: The length at which strings should be wrapped
     :return: An image with the desired text
     """
     if size_y is None:
@@ -44,10 +45,9 @@ def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None
     with Image.new('RGBA', (size_x * 10, size_y * 10)) as image:
         draw = Draw(image)
 
-        width, height = font.getsize(text)
-        pos = (size_x * 10 - width) / offset_x ** -1, (size_y * 10 - height) / offset_y ** -1
+        for index, string in enumerate(textwrap.wrap(text, wrap_width)):
+            width, height = font.getsize(string)
+            pos = (size_x * 10 - width) / offset_x ** -1, (size_y * 10 - height * (index * -1)) / offset_y ** -1
+            draw.text(pos, string, font=font, **draw_kwargs)
 
-        draw.text(pos, text, font=font, **draw_kwargs)
-
-        a = image.resize((size_x, size_y), resample=Image.ANTIALIAS)
-        return a
+        return image.resize((size_x, size_y), resample=Image.ANTIALIAS)
