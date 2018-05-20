@@ -1,7 +1,5 @@
 from collections import namedtuple
-from itertools import cycle
 
-import random
 from PIL import Image
 from PIL.ImageDraw import Draw
 from PIL.ImageFont import truetype
@@ -12,7 +10,7 @@ from ruamel.yaml import YAML
 from typing import Dict
 
 from sixx.plugins.utils import Colour
-from sixx.plugins.utils.pillow import save_image, antialiased_text
+from sixx.plugins.utils.pillow import antialiased_text, save_image
 
 result = namedtuple('result', 'colour name')
 
