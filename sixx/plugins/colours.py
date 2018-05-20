@@ -10,7 +10,7 @@ from ruamel.yaml import YAML
 from typing import Dict
 
 from sixx.plugins.utils import Colour
-from sixx.plugins.utils.pillow import save_image
+from sixx.plugins.utils.pillow import save_image, antialiased_text
 
 result = namedtuple('result', 'colour name')
 
@@ -65,21 +65,11 @@ class Colours(Plugin):
 
                 draw.rectangle([0, 0 + offset, SIDE_WIDTH, SIDE_WIDTH / 5 + offset], fill=colour.rgb)
 
-                with Image.new('RGBA', (SIDE_WIDTH * 10, int((SIDE_WIDTH / 5) * 10))) as aa_img:
-                    aa_draw = Draw(aa_img)
-
-                    x, y = FONT_SMALL.getsize(name)
-                    x, y = (SIDE_WIDTH * 10 - x) / 2, ((SIDE_WIDTH / 5) * 10 - y) / 2
-
-                    font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
-
-                    aa_draw.text((x, y), name, font=FONT_SMALL, fill=font_colour)
-
-                    aa_img = aa_img.resize((SIDE_WIDTH, int(SIDE_WIDTH / 5)), resample=Image.ANTIALIAS)
-                    img.paste(aa_img, (0, 0 + offset), aa_img)
+                font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
+                name = antialiased_text(name, FONT_SMALL, SIDE_WIDTH, int(SIDE_WIDTH / 5), fill=font_colour)
+                img.paste(name, (0, 0 + offset), name)
 
             buffer = save_image(img)
-
             await ctx.channel.messages.upload(buffer, filename='cool.png')
 
     @event('role_update')
@@ -104,31 +94,16 @@ class Colours(Plugin):
                 offset = rectangle_index * SIDE_WIDTH
                 draw.rectangle([0 + offset, 0, SIDE_WIDTH + offset, SIDE_WIDTH], fill=colour.rgb)
 
-                # Pillow doesn't antialias text and has no support for it so we create a larger
-                # image than the original with only the text, then resize it with the antialias
-                # filter and paste it on top of the actual image we want to send to discord.
-                with Image.new('RGBA', (SIDE_WIDTH * 10, SIDE_WIDTH * 10)) as aa_img:
-                    aa_draw = Draw(aa_img)
+                # This makes text black if the contrast between black text and the background colour
+                # is high because white text becomes unreadable on light coloured backgrounds.
+                font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
+                nearest_colour = self.get_colour_names(colour, n=1).pop().name.upper()
 
-                    x, y = FONT_BIG.getsize('#000000')
-                    x, y = (SIDE_WIDTH * 10 - x) / 2, (SIDE_WIDTH * 10 - y) / 2  # top left corner of the text
+                name = antialiased_text(nearest_colour, FONT_SMALL, SIDE_WIDTH, fill=font_colour, offset_y=3 / 4)
+                code = antialiased_text(str(colour), FONT_BIG, SIDE_WIDTH, fill=font_colour)
 
-                    # This makes text black if the contrast between black text and the background colour
-                    # is high because white text becomes unreadable on light coloured backgrounds.
-                    font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
+                img.paste(name, (0 + offset, 0), name)
+                img.paste(code, (0 + offset, 0), code)
 
-                    aa_draw.text((x, y), str(colour).upper(), font=FONT_BIG, fill=font_colour)
-
-                    nearest_colour = self.get_colour_names(colour, n=1).pop().name
-                    x, y = FONT_SMALL.getsize(nearest_colour)
-                    x, y = (SIDE_WIDTH * 10 - x) // 2, (SIDE_WIDTH * 10 - y) // 4 * 3
-
-                    aa_draw.text((x, y), nearest_colour, font=FONT_SMALL, fill=font_colour)
-
-                    aa_img = aa_img.resize((SIDE_WIDTH, SIDE_WIDTH), resample=Image.ANTIALIAS)
-                    img.paste(aa_img, (0 + offset, 0), aa_img)
-
-            # save image so we can send it
             buffer = save_image(img)
-
             await channel.messages.upload(buffer, filename='cool.png')
