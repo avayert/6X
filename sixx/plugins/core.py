@@ -58,7 +58,7 @@ class Core(Plugin):
         embed = Embed(colour=0xcc0000 if stderr else 0x4BB543, description=description)
         embed.set_author(
             name='Result:',
-            url='https://github.com/TildeBeta/TwitterImages',
+            url='https://github.com/TildeBeta/6X',
             icon_url='https://cdn.discordapp.com/emojis/421819534060814347.png?v=1'
         )
 
