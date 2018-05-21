@@ -22,6 +22,19 @@ def save_image(image: Image, *, format='png') -> BytesIO:
 
 
 def add_title(image: Image, text: str, font: ImageFont, height: int, **text_kwargs):
+    """
+    Adds a title strip to the top of the image.
+
+    Changes the size of the image to be `image.size + (0, height)`
+
+    See this for reference: https://cdn.discordapp.com/attachments/400042308189290509/448185670339395605/cool.png
+    :param image: The image to add the title to
+    :param text: The text to be written on the title
+    :param font: The font that will be used to write the title text
+    :param height: The height of the title
+    :param text_kwargs: Extra keyword arguments to be passed into antialiased_text
+    :return: New image with the title
+    """
     f_width, f_height = font.getsize(text)
 
     if f_height < height:
