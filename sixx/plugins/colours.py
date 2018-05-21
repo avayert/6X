@@ -10,7 +10,7 @@ from ruamel.yaml import YAML
 from typing import Dict
 
 from sixx.plugins.utils import Colour
-from sixx.plugins.utils.pillow import antialiased_text, save_image
+from sixx.plugins.utils.pillow import antialiased_text, save_image, add_title
 
 result = namedtuple('result', 'colour name')
 
@@ -105,6 +105,8 @@ class Colours(Plugin):
 
                 img.paste(name, (0 + offset, 0), name)
                 img.paste(code, (0 + offset, 0), code)
+
+            img = add_title(img, new.name, FONT_SMALL, height=25)
 
             buffer = save_image(img)
             await channel.messages.upload(buffer, filename='cool.png')

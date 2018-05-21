@@ -21,6 +21,34 @@ def save_image(image: Image, *, format='png') -> BytesIO:
     return buffer
 
 
+def add_title(image: Image, text: str, font: ImageFont, height: int, **text_kwargs):
+    f_width, f_height = font.getsize(text)
+
+    if f_height < height:
+        raise ValueError('Height of title must be larger than the font')
+
+    x, y = image.size
+    with Image.new('RGBA', (x, y + height)) as img:
+        draw = Draw(img)
+
+        img.paste(image, (0, height), image)
+
+        with Image.new('RGBA', (x, y + height)) as shadow:
+            # Draw the shadow box and apply blur
+            cool = Draw(shadow)
+            for i in range(1, 6):
+                cool.rectangle([(0, height + i), (x, height + 1 + i)], fill=(38, 38, 38, 31 * (6 - i)))
+
+            img.paste(shadow, (0, 0), shadow)
+
+        draw.rectangle([0, 0, x, height], fill=(32, 34, 37))
+
+        text = antialiased_text(text, font, size_x=x, size_y=height, fill=(255, 255, 255), **text_kwargs)
+        img.paste(text, (0, 0), text)
+
+        return img.copy()
+
+
 def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None, *, offset_x: float = 1 / 2,
                      offset_y: float = 1 / 2, wrap_width: int = 50, **draw_kwargs) -> Image:
     """
