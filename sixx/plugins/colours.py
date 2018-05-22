@@ -58,21 +58,20 @@ class Colours(Plugin):
         # TODO text clipping, maybe allow hex as an optional arg?
         nearest = self.get_colour_names(colour, n=n)
 
-        with spawn_thread():
-            with Image.new('RGBA', (SIDE_WIDTH, int(SIDE_WIDTH / 5 * len(nearest)))) as img:
-                draw = Draw(img)
+        with Image.new('RGBA', (SIDE_WIDTH, int(SIDE_WIDTH / 5 * len(nearest)))) as img:
+            draw = Draw(img)
 
-                for rectangle_index, (colour, name) in enumerate(nearest):
-                    offset = int(rectangle_index * SIDE_WIDTH / 5)
+            for rectangle_index, (colour, name) in enumerate(nearest):
+                offset = int(rectangle_index * SIDE_WIDTH / 5)
 
-                    draw.rectangle([0, 0 + offset, SIDE_WIDTH, SIDE_WIDTH / 5 + offset], fill=colour.rgb)
+                draw.rectangle([0, 0 + offset, SIDE_WIDTH, SIDE_WIDTH / 5 + offset], fill=colour.rgb)
 
-                    font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
-                    name = antialiased_text(name, FONT_SMALL, SIDE_WIDTH, int(SIDE_WIDTH / 5), fill=font_colour)
-                    img.paste(name, (0, 0 + offset), name)
+                font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
+                name = antialiased_text(name, FONT_SMALL, SIDE_WIDTH, int(SIDE_WIDTH / 5), fill=font_colour)
+                img.paste(name, (0, 0 + offset), name)
 
-                buffer = save_image(img)
-                await ctx.channel.messages.upload(buffer, filename='cool.png')
+            buffer = save_image(img)
+            await ctx.channel.messages.upload(buffer, filename='cool.png')
 
     @event('role_update')
     async def colour_changed(self, ctx: EventContext, old: Role, new: Role):
@@ -88,28 +87,27 @@ class Colours(Plugin):
         if channel is None:
             return
 
-        with spawn_thread():
-            # one colour is 100x100 -> 200x100 is the image size
-            with Image.new('RGBA', (2 * SIDE_WIDTH, SIDE_WIDTH)) as img:
-                draw = Draw(img)  # Draws the coloured rectangles
+        # one colour is 100x100 -> 200x100 is the image size
+        with Image.new('RGBA', (2 * SIDE_WIDTH, SIDE_WIDTH)) as img:
+            draw = Draw(img)  # Draws the coloured rectangles
 
-                for rectangle_index, colour in enumerate(map(Colour, (old.colour, new.colour))):
-                    offset = rectangle_index * SIDE_WIDTH
-                    draw.rectangle([0 + offset, 0, SIDE_WIDTH + offset, SIDE_WIDTH], fill=colour.rgb)
+            for rectangle_index, colour in enumerate(map(Colour, (old.colour, new.colour))):
+                offset = rectangle_index * SIDE_WIDTH
+                draw.rectangle([0 + offset, 0, SIDE_WIDTH + offset, SIDE_WIDTH], fill=colour.rgb)
 
-                    # This makes text black if the contrast between black text and the background colour
-                    # is high because white text becomes unreadable on light coloured backgrounds.
-                    font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
-                    nearest_colour = self.get_colour_names(colour, n=1).pop().name
+                # This makes text black if the contrast between black text and the background colour
+                # is high because white text becomes unreadable on light coloured backgrounds.
+                font_colour = (0, 0, 0) if colour.contrast(Colour(0x000000)) >= 15 else (255, 255, 255)
+                nearest_colour = self.get_colour_names(colour, n=1).pop().name
 
-                    name = antialiased_text(nearest_colour, FONT_SMALL, SIDE_WIDTH, fill=font_colour, offset_y=3 / 4,
-                                            wrap_width=18)
-                    code = antialiased_text(str(colour).upper(), FONT_BIG, SIDE_WIDTH, fill=font_colour)
+                name = antialiased_text(nearest_colour, FONT_SMALL, SIDE_WIDTH, fill=font_colour, offset_y=3 / 4,
+                                        wrap_width=18)
+                code = antialiased_text(str(colour).upper(), FONT_BIG, SIDE_WIDTH, fill=font_colour)
 
-                    img.paste(name, (0 + offset, 0), name)
-                    img.paste(code, (0 + offset, 0), code)
+                img.paste(name, (0 + offset, 0), name)
+                img.paste(code, (0 + offset, 0), code)
 
-                img = add_title(img, new.name, FONT_SMALL, height=25)
+            img = add_title(img, new.name, FONT_SMALL, height=25)
 
-                buffer = save_image(img)
-                await channel.messages.upload(buffer, filename='cool.png')
+            buffer = save_image(img)
+            await channel.messages.upload(buffer, filename='cool.png')
