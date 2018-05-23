@@ -4,6 +4,7 @@ from curious import EventContext
 from curious.commands import CommandsManager, Context
 from curious.commands.exc import ConditionsFailedError
 from curious.core.client import Client
+from pathlib import Path
 
 from sixx.credentials import discord
 
@@ -29,8 +30,9 @@ async def silence_condition_failure(event_ctx: EventContext, ctx: Context, error
 
 
 async def main():
-    await manager.load_plugins_from('sixx.plugins.core')
-    await manager.load_plugins_from('sixx.plugins.twitter')
-    await manager.load_plugins_from('sixx.plugins.colours')
+    plugins = Path('./sixx/plugins').glob('*.py')
+
+    for plugin in plugins:
+        await manager.load_plugins_from('sixx.plugins.' + plugin.stem)
 
     await client.run_async()
