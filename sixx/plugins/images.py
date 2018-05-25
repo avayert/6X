@@ -1,10 +1,14 @@
 import asks
+import numpy as np
 from PIL import Image
-from PIL.ImageDraw import Draw
+from PIL.ImageEnhance import Brightness
+from PIL.ImageFont import truetype
 from curious.commands import Context, Plugin, command
 from io import BytesIO
 
-from sixx.plugins.utils.pillow import save_image
+from sixx.plugins.utils.pillow import add_noise, add_scanlines, save_image
+
+SCANLINES, NOISE, BOTH = range(3)
 
 
 class Images(Plugin):
@@ -22,17 +26,17 @@ class Images(Plugin):
             buffer.write(chunk)
 
         with Image.open(buffer) as image:
-            with Image.new('RGBA', image.size) as img:
-                draw = Draw(img, mode='RGBA')
+            filter = np.random.choice(range(3), p=[0.7, 0.2, 0.1])
 
-                for y in range(image.height):
-                    if y % 2 == 0:
-                        colour = 0, 0, 0, 50
-                    else:
-                        colour = 255, 255, 255, 50
+            if filter == SCANLINES:
+                image = add_scanlines(image)
+            elif filter == NOISE:
+                image = add_noise(image)
+            else:
+                image = add_scanlines(image)
+                image = add_noise(image)
 
-                    draw.rectangle([(0, y), (image.width, y + 1)], fill=colour)
-                image.paste(img, (0, 0), img)
+            Brightness(image).enhance(2.5)
 
-            buffer = save_image(image, format='jpeg')
-            await ctx.channel.messages.upload(buffer, filename='shoutouts.jpeg')
+            buffer = save_image(image, format=image.format)
+            await ctx.channel.messages.upload(buffer, filename='shoutouts.' + image.format)

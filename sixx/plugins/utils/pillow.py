@@ -1,6 +1,8 @@
 """
 I hate pillow.
 """
+import numpy as np
+import random
 import textwrap
 from PIL import Image, ImageFont
 from PIL.ImageDraw import Draw
@@ -92,3 +94,41 @@ def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None
             draw.text(pos, string, font=font, **draw_kwargs)
 
         return image.resize((size_x, size_y), resample=Image.ANTIALIAS)
+
+
+def add_scanlines(image: Image, *, transparency: int = 50):
+    """
+    Adds a scanline effect to an image.
+    :param image: The image to add the effect to.
+    :return: An image with the desired effect
+    """
+
+    # Makes alternating rows of  transparent black and white strips
+    arr = np.empty((image.height, image.width, 4), dtype=np.uint8)
+    arr[0::2] = (255, 255, 255, transparency)
+    arr[1::2] = (0, 0, 0, transparency)
+
+    with Image.fromarray(arr, 'RGBA') as img:
+        image.paste(img, mask=img)
+
+    return image
+
+
+def add_noise(image: Image, *, transparency: int = 50):
+    """
+    Adds a scanline effect to an image.
+    :param image: The image to add the effect to.
+    :return: An image with the desired effect
+    """
+
+    arr = np.empty((image.height, image.width, 4))
+
+    pixels = (0, 0, 0, transparency), (255, 255, 255, transparency)
+    for y in range(image.height):
+        for x in range(image.width):
+            arr[y][x] = random.choice(pixels)
+
+    with Image.fromarray(arr, 'RGBA') as img:
+        image.paste(img, mask=img)
+
+    return image
