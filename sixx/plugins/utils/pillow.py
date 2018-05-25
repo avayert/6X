@@ -6,6 +6,7 @@ import random
 import textwrap
 from PIL import Image, ImageFont
 from PIL.ImageDraw import Draw
+from PIL.ImageFont import truetype
 from io import BytesIO
 
 
@@ -84,6 +85,8 @@ def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None
     """
     if size_y is None:
         size_y = size_x
+
+    font = truetype(font.path, size=font.size * 10)
 
     with Image.new('RGBA', (size_x * 10, size_y * 10)) as image:
         draw = Draw(image)

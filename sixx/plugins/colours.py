@@ -22,8 +22,8 @@ SIDE_WIDTH = 200
 # NOTE: You will need a font file with this name in your system fonts.
 # Either change the name of some other font or just change the
 # string below if it's broken (good design I know)
-FONT_BIG = truetype('VCR_OSD_MONO.ttf', size=int(SIDE_WIDTH * (5 / 2) * 0.75))
-FONT_SMALL = truetype('VCR_OSD_MONO.ttf', size=int(SIDE_WIDTH * (5 / 4) * 0.75))
+FONT_BIG = truetype('VCR_OSD_MONO.ttf', size=int(SIDE_WIDTH * (5 / 2) * 0.75 / 10))
+FONT_SMALL = truetype('VCR_OSD_MONO.ttf', size=int(SIDE_WIDTH * (5 / 4) * 0.75 / 10))
 
 
 def load_colours() -> Dict[Colour, str]:
