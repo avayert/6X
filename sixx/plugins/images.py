@@ -1,8 +1,11 @@
+from math import sqrt
+
 import asks
 import datetime
 import numpy as np
 import random
 from PIL import Image
+from PIL.ImageDraw import Draw
 from PIL.ImageEnhance import Brightness
 from PIL.ImageFont import truetype
 from curious.commands import Context, Plugin, command
@@ -43,7 +46,7 @@ class Images(Plugin):
             # hoo boy
 
             text = np.random.choice(['PLAY', '  PAUSE'], p=[0, 1])
-            font = truetype('VCR_OSD_MONO.ttf', size=int(min(image.size) * 1.2))
+            font = truetype('VCR_OSD_MONO.ttf', size=int(min(image.size) / 10))
 
             start = datetime.datetime(1980, 1, 1, 0, 0)
             now = datetime.datetime.utcnow()
@@ -51,13 +54,41 @@ class Images(Plugin):
             # https://stackoverflow.com/a/8170651/7581432
             random_date = start + datetime.timedelta(seconds=random.randint(0, int((now - start).total_seconds())))
 
-            topleft_text = antialiased_text(text, font, image.width, image.height, offset_x=1 / 35, offset_y=1 / 15)
+            topleft_text = antialiased_text(text, font, image.width, image.height, offset_x=1 / 30, offset_y=1 / 15)
             image.paste(topleft_text, (0, 0), mask=topleft_text)
+
+            draw = Draw(image)
+            if text == 'PLAY':
+                width, height = font.getsize(text)
+                offset_x = width + image.width * (1 / 30) * 1.5
+                offset_y = image.height * (1 / 15)
+
+                draw.polygon(
+                    [
+                        (offset_x, offset_y),
+                        (offset_x, offset_y + height),
+                        (offset_x + sqrt(height ** 2 - (height / 2) ** 2), offset_y + height / 2)
+                    ],
+                    fill=(255, 255, 255)
+                )
+            else:
+                _, height = font.getsize('  ')
+                offset_x = image.width * (1 / 35)
+                offset_y = image.height * (1 / 15)
+
+                part = (height - offset_x / 2) / 8
+
+                draw.rectangle(
+                    [(offset_x, offset_y + part), (offset_x + 3 * part, offset_y - part + height)],
+                    fill=(255, 255, 255))
+                draw.rectangle(
+                    [(offset_x + 5 * part, offset_y + part), (offset_x + 8 * part, offset_y - part + height)],
+                    fill=(255, 255, 255))
 
             # This is a nasty hack but oh well
             time, date = random_date.strftime('%H:%M|%b. %d %Y').split('|')
             wrap_width = len(date)
-            botleft_text = antialiased_text(time.ljust(wrap_width) + date, font, image.width, image.height,
+            botleft_text = antialiased_text(time.ljust(wrap_width + 1) + date, font, image.width, image.height,
                                             offset_x=1 / 35, offset_y=13 / 15, wrap_width=wrap_width)
             image.paste(botleft_text, (0, 0), mask=botleft_text)
 
