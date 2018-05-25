@@ -66,7 +66,7 @@ def add_title(image: Image, text: str, font: ImageFont, height: int, **text_kwar
 
 
 def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None, *, offset_x: float = 1 / 2,
-                     offset_y: float = 1 / 2, wrap_width: int = 50, **draw_kwargs) -> Image:
+                     offset_y: float = 1 / 2, wrap_width: int = 50, msaa_size: int = 2, **draw_kwargs) -> Image:
     """
     Returns a new image with antialiased text that you can then paste on your source image.
 
@@ -86,14 +86,14 @@ def antialiased_text(text: str, font: ImageFont, size_x: int, size_y: int = None
     if size_y is None:
         size_y = size_x
 
-    font = truetype(font.path, size=font.size * 10)
+    font = truetype(font.path, size=font.size * msaa_size)
 
-    with Image.new('RGBA', (size_x * 10, size_y * 10)) as image:
+    with Image.new('RGBA', (size_x * msaa_size, size_y * msaa_size)) as image:
         draw = Draw(image)
 
         for index, string in enumerate(textwrap.wrap(text, wrap_width), start=-1):
             width, height = font.getsize(string)
-            pos = (size_x * 10 - width) / offset_x ** -1, (size_y * 10 - height * -index) / offset_y ** -1
+            pos = (size_x * msaa_size - width) / offset_x ** -1, (size_y * msaa_size - height * -index) / offset_y ** -1
             draw.text(pos, string, font=font, **draw_kwargs)
 
         return image.resize((size_x, size_y), resample=Image.ANTIALIAS)
