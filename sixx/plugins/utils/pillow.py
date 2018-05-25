@@ -39,7 +39,7 @@ def add_title(image: Image, text: str, font: ImageFont, height: int, **text_kwar
     """
     f_width, f_height = font.getsize(text)
 
-    if f_height < height:
+    if f_height > height:
         raise ValueError('Height of title must be larger than the font')
 
     x, y = image.size
