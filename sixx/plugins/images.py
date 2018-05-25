@@ -45,7 +45,7 @@ class Images(Plugin):
 
             # hoo boy
 
-            text = np.random.choice(['PLAY', '  PAUSE'], p=[0, 1])
+            text = np.random.choice(['PLAY', '  PAUSE'], p=[0.8, 0.2])
             font = truetype('VCR_OSD_MONO.ttf', size=int(min(image.size) / 10))
 
             start = datetime.datetime(1980, 1, 1, 0, 0)
