@@ -93,3 +93,21 @@ class Core(Plugin):
         seconds = int(time.time() - psutil.Process().create_time())
         legible = display_time(seconds)
         await ctx.channel.messages.send(legible)
+
+    @command(name='load')
+    @is_owner()
+    async def load_(self, ctx: Context, *, name: str):
+        await ctx.bot.manager.load_plugins_from(name)
+        await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
+
+    @command(name='unload')
+    @is_owner()
+    async def unload_(self, ctx: Context, *, name: str):
+        await ctx.bot.manager.unload_load_plugins_from(name)
+        await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
+
+    @command()
+    @is_owner()
+    async def reload(self, ctx: Context, *, name: str):
+        await ctx.bot.manager.unload_load_plugins_from(name)
+        await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
