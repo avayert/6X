@@ -97,17 +97,26 @@ class Core(Plugin):
     @command(name='load')
     @is_owner()
     async def load_(self, ctx: Context, *, name: str):
+        """
+        Loads the specified plugin.
+        """
         await ctx.bot.manager.load_plugins_from(name)
         await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
 
     @command(name='unload')
     @is_owner()
     async def unload_(self, ctx: Context, *, name: str):
+        """
+        Unloads the specified plugin.
+        """
         await ctx.bot.manager.unload_load_plugins_from(name)
         await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
 
     @command()
     @is_owner()
     async def reload(self, ctx: Context, *, name: str):
+        """
+        Reloads the specified plugin.
+        """
         await ctx.bot.manager.unload_load_plugins_from(name)
         await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
