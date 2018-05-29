@@ -109,7 +109,7 @@ class Core(Plugin):
         """
         Unloads the specified plugin.
         """
-        await ctx.bot.manager.unload_load_plugins_from(name)
+        await ctx.bot.manager.unload_plugins_from(name)
         await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
 
     @command()
@@ -118,5 +118,6 @@ class Core(Plugin):
         """
         Reloads the specified plugin.
         """
-        await ctx.bot.manager.unload_load_plugins_from(name)
+        await ctx.bot.manager.unload_plugins_from(name)
+        await ctx.bot.manager.load_plugins_from(name)
         await ctx.channel.messages.send('\N{WHITE HEAVY CHECK MARK}')
