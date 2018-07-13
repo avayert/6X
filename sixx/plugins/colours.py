@@ -75,6 +75,19 @@ class Colours(Plugin):
                     buffer = save_image(img)
         await ctx.channel.messages.upload(buffer, filename='cool.png')
 
+    @command()
+    async def rgb(self, ctx: Context, colour: Colour):
+        """
+        Converts a hex colour to RGB.
+        """
+        message = '```prolog\n'
+        for letter, value in zip('RGB', colour.rgb):
+            message += f'{letter}: {value:02} (0x{value:02X})\n'
+        message += ' '.join(str(part) for part in colour.rgb)
+        message += '\n```'
+
+        await ctx.channel.messages.send(message)
+
     @event('role_update')
     async def colour_changed(self, ctx: EventContext, old: Role, new: Role):
         # We only care about colour changes
