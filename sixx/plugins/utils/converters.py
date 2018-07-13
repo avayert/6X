@@ -100,9 +100,30 @@ def convert_hex_colour(annotation, ctx: Context, arg: str) -> Colour:
     try:
         value = int(arg, base=16)
     except ValueError:
-        raise ConversionFailedError(ctx, arg, Colour, 'Invalid value.')
+        raise ConversionFailedError(ctx, arg, annotation, 'Invalid value.')
     else:
-        return Colour(value)
+        return annotation(value)
+
+
+class RGBPart:
+    """
+    Represents a hex value that is in the unsigned char range.
+    """
+    pass
+
+
+def valid_unsigned_char(annotation, ctx: Context, arg: str):
+    print(arg)
+    try:
+        value = int(arg)
+    except ValueError:
+        raise ConversionFailedError(ctx, arg, annotation, 'Invalid number.')
+    else:
+        if not 0 <= value <= 255:
+            raise ConversionFailedError(ctx, arg, annotation, 'Value must be within range (0 - 255)')
+
+    return value
 
 
 Context.add_converter(Colour, convert_hex_colour)
+Context.add_converter(RGBPart, valid_unsigned_char)

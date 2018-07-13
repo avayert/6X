@@ -8,9 +8,10 @@ from curious import EventContext, Role, event
 from curious.commands import Context, Plugin, command
 from heapq import nsmallest
 from ruamel.yaml import YAML
-from typing import Dict
+from typing import Dict, List
 
 from sixx.plugins.utils import Colour
+from sixx.plugins.utils.converters import RGBPart
 from sixx.plugins.utils.pillow import add_title, antialiased_text, save_image
 
 result = namedtuple('result', 'colour name')
@@ -87,6 +88,10 @@ class Colours(Plugin):
         message += '\n```'
 
         await ctx.channel.messages.send(message)
+
+    @command(name='hex')
+    async def hex_(self, ctx: Context, *parts: RGBPart):
+        await ctx.channel.messages.send('#' + ''.join(f'{part:02X}' for part in parts))
 
     @event('role_update')
     async def colour_changed(self, ctx: EventContext, old: Role, new: Role):
