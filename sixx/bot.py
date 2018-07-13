@@ -2,7 +2,7 @@ import logging
 import multio
 from curious import EventContext
 from curious.commands import CommandsManager, Context
-from curious.commands.exc import ConditionsFailedError
+from curious.commands.exc import ConditionsFailedError, ConversionFailedError
 from curious.core.client import Client
 from pathlib import Path
 
@@ -18,7 +18,7 @@ logger = logging.getLogger('TwitterImages')
 
 
 @client.event('command_error')
-async def silence_condition_failure(event_ctx: EventContext, ctx: Context, error):
+async def handle_errors(event_ctx: EventContext, ctx: Context, error):
     if isinstance(error, ConditionsFailedError):
         logger.info(
             '{author.name}#{author.discriminator} ({author.user.id}) '
@@ -26,6 +26,8 @@ async def silence_condition_failure(event_ctx: EventContext, ctx: Context, error
             .format(ctx, error, author=ctx.author.user)
         )
         return
+    if isinstance(error, ConversionFailedError):
+        await ctx.channel.messages.send(str(error))
 
     raise error
 
