@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 
 import contextlib
 import curio
@@ -28,6 +29,29 @@ class REPL(Plugin):
             code = '\n'.join(code.splitlines()[lines])
 
         return code.strip('\n` ')
+
+    @command(name='sessions')
+    async def sessions_(self, ctx: Context):
+        guilds = defaultdict(list)
+
+        for id in self.sessions:
+            channel = ctx.bot.find_channel(id)
+            guilds[channel.guild].append(channel)
+
+        if not guilds:
+            return await ctx.channel.messages.send('No REPL sessions open.')
+
+        message = '```\n'
+
+        for guild, channels in guilds.items():
+            message += '{0.id:<20} ({0.name})\n'.format(guild)
+
+            for channel in channels:
+                message += '  * {0.id:<20} ({0.name})\n'.format(channel)
+
+        message += '```'
+
+        await ctx.channel.messages.send(message)
 
     @command()
     @is_owner()
