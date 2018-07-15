@@ -85,12 +85,8 @@ class REPL(Plugin):
 
         while True:
             try:
-                response = await curio.timeout_after(
-                    15 * 60,
-                    ctx.bot.wait_for,
-                    'message_create',
-                    predicate
-                )
+                async with curio.timeout_after(60 * 15):
+                    response = await ctx.bot.wait_for('message_create', predicate=predicate)
             except curio.TaskTimeout:
                 self.sessions.remove(ctx.channel.id)
                 await dest.send('Timed out after 15 minutes.')
