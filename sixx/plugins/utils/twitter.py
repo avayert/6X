@@ -9,10 +9,8 @@ from sixx.credentials import twitter
 format_map = namedtuple('fmt', 'fmt attr_name')
 
 
-def fix_content(tweet, media):
-    # I hope this doesn't break the entity handling
-    content = re.sub(r'({})'.format('|'.join(image['url'] for image in media)), '', tweet['full_text'])
-
+def fix_content(tweet):
+    content = tweet['full_text']
     offset = 0
     entities = []
 
@@ -27,7 +25,8 @@ def fix_content(tweet, media):
     formats = {
         'hashtags': format_map('[#{0}](https://twitter.com/hashtag/{0})', 'text'),
         'user_mentions': format_map('[@{0}](https://twitter.com/{0})', 'screen_name'),
-        'urls': format_map('{0}', 'expanded_url')
+        'urls': format_map('{0}', 'expanded_url'),
+        'media': format_map('', 'url')
     }
 
     for entry in sorted(entities, key=lambda e: e['indices']):
@@ -45,7 +44,7 @@ def build_embed(tweet, media):
     user = tweet['user']
     base = 'https://twitter.com/{0[screen_name]}'.format(user)
 
-    embed = curious.Embed(description=fix_content(tweet, media), url=base + '/status/' + tweet['id_str'])
+    embed = curious.Embed(description=fix_content(tweet), url=base + '/status/' + tweet['id_str'])
 
     embed.set_footer(text='Twitter', icon_url='https://abs.twimg.com/icons/apple-touch-icon-192x192.png')
 
