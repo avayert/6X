@@ -1,8 +1,10 @@
 import asks
+import curio
+import curious
 import logging
 import re
-from curious import event
-from curious.commands import Context, Plugin
+from curious import event, EventContext, Embed
+from curious.commands import Plugin
 
 from sixx.credentials import twitter
 
@@ -30,7 +32,7 @@ class Twitter(Plugin):
         resp = await asks.get(
             uri='https://api.twitter.com/1.1/statuses/show.json',
             headers={'Authorization': twitter.token},
-            params={'id': id}
+            params={'id': id, 'tweet_mode': 'extended'}  # Holy SHIT the twitter API sucks,,,,,
         )
         json = resp.json()
 
@@ -41,26 +43,61 @@ class Twitter(Plugin):
         else:
             return json
 
+    @staticmethod
+    def build_embed(tweet, media):
+        user = tweet['user']
+        base = 'https://twitter.com/{0[screen_name]}'.format(user)
+        text = re.sub(r'({})'.format('|'.join(image['url'] for image in media)), '', tweet['full_text'])
+
+        embed = curious.Embed(description=text, url=base + '/status/' + tweet['id_str'])
+
+        embed.set_footer(text='Twitter', icon_url='https://abs.twimg.com/icons/apple-touch-icon-192x192.png')
+
+        embed.set_author(url=base, icon_url=user['profile_image_url_https'],
+                         name='{0[name]} ({0[screen_name]})'.format(user))
+
+        if media:
+            embed.set_image(image_url=media[0]['media_url_https'])
+
+        return embed
+
     @event('message_create')
-    async def parse_tweets(self, ctx: Context, message):
+    async def parse_tweets(self, ctx: EventContext, message):
         """
         Tries to find all tweets withing a message and post information about them.
         """
         if message.author.user.bot:
             return
 
-        for tweet in tweet_pattern.finditer(message.content):
-            try:
-                tweet = await self.get_tweet(tweet.group(1))
-            except ValueError:
-                logger.exception('ValueError raised in parse_tweets')
-                continue
+        tweet_match = tweet_pattern.search(message.content)
 
-            media = tweet.get('extended_entities', {}).get('media', [])
-            images = media[all_but_first]
+        if tweet_match is None:
+            return
 
-            for image in images:
-                await message.channel.messages.send(image['media_url_https'])
+        try:
+            tweet = await self.get_tweet(tweet_match.group(1))
+        except ValueError:
+            logger.exception('ValueError raised in parse_tweets')
+            return
 
-            if tweet['is_quote_status']:
-                await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
+        media = tweet.get('extended_entities', {}).get('media', [])
+        images = media[all_but_first]
+
+        embed = self.build_embed(tweet, media)
+
+        async with curio.TaskGroup() as group:
+            # TODO escape markdown in username
+            await group.spawn(message.delete())
+            await group.spawn(
+                message.channel.messages.send('**{0.author.name}**: <{1}>'.format(message, tweet_match.group(0)),
+                                              embed=embed))
+
+        embed = Embed()
+        embed.set_footer(text='Twitter', icon_url='https://abs.twimg.com/icons/apple-touch-icon-192x192.png')
+
+        for image in images:
+            embed.set_image(image_url=image['media_url_https'])
+            await message.channel.messages.send(embed=embed)
+
+        if tweet['is_quote_status']:
+            await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
