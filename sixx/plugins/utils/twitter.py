@@ -1,8 +1,8 @@
-import asks
-import re
-
-import curious
 from collections import namedtuple
+
+import asks
+import curious
+import re
 
 from sixx.credentials import twitter
 
@@ -42,6 +42,7 @@ def fix_content(tweet, media):
 
 
 def build_embed(tweet, media):
+    print(tweet)
     user = tweet['user']
     base = 'https://twitter.com/{0[screen_name]}'.format(user)
 
@@ -51,6 +52,9 @@ def build_embed(tweet, media):
 
     embed.set_author(url=base, icon_url=user['profile_image_url_https'],
                      name='{0[name]} ({0[screen_name]})'.format(user))
+
+    embed.add_field(name='Retweets', value=tweet['retweet_count'])
+    embed.add_field(name='Likes', value=tweet['favorite_count'])
 
     if media:
         embed.set_image(image_url=media[0]['media_url_https'])

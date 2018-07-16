@@ -1,4 +1,3 @@
-import asks
 import curio
 import logging
 import re
