@@ -14,7 +14,7 @@ client = Client(discord.token)
 manager = CommandsManager.with_client(client, command_prefix='t!')
 client.manager = manager
 
-logger = logging.getLogger('TwitterImages')
+logger = logging.getLogger('6X')
 
 
 @client.event('command_error')

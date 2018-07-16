@@ -11,7 +11,7 @@ tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
 
 all_but_first = slice(1, None, None)
 
-logger = logging.getLogger('TwitterImages')
+logger = logging.getLogger('6X')
 
 
 class Twitter(Plugin):
