@@ -47,7 +47,6 @@ class Twitter(Plugin):
         embed.colour = message.author.colour
 
         async with curio.TaskGroup() as group:
-            # TODO escape markdown in username
             await group.spawn(message.delete())
             await group.spawn(
                 message.channel.messages.send(f'<{tweet_match.group(0)}>', embed=embed))
