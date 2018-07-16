@@ -42,16 +42,20 @@ class Twitter(Plugin):
         images = media[all_but_first]
 
         embed = twitter.build_embed(tweet, media)
+        embed.set_footer(text='Posted to discord by {0.name}'.format(message.author),
+                         icon_url=str(message.author.user.avatar_url))
+        embed.colour = message.author.colour
 
         async with curio.TaskGroup() as group:
             # TODO escape markdown in username
             await group.spawn(message.delete())
             await group.spawn(
-                message.channel.messages.send('**{0.author.name}**: <{1}>'.format(message, tweet_match.group(0)),
-                                              embed=embed))
+                message.channel.messages.send(f'<{tweet_match.group(0)}>', embed=embed))
 
         embed = Embed()
-        embed.set_footer(text='Twitter', icon_url='https://abs.twimg.com/icons/apple-touch-icon-192x192.png')
+        embed.set_footer(text='Posted to Discord by {0.name}'.format(message.author),
+                         icon_url=str(message.author.user.avatar_url))
+        embed.colour = message.author.colour
 
         for image in images:
             embed.set_image(image_url=image['media_url_https'])

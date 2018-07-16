@@ -46,8 +46,6 @@ def build_embed(tweet, media):
 
     embed = curious.Embed(description=fix_content(tweet), url=base + '/status/' + tweet['id_str'])
 
-    embed.set_footer(text='Twitter', icon_url='https://abs.twimg.com/icons/apple-touch-icon-192x192.png')
-
     embed.set_author(url=base, icon_url=user['profile_image_url_https'],
                      name='{0[name]} ({0[screen_name]})'.format(user))
 
