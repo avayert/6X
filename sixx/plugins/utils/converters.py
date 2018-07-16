@@ -113,7 +113,11 @@ class RGBPart:
 
 
 def valid_unsigned_char(annotation, ctx: Context, arg: str):
-    print(arg)
+    """
+    Checks if given input is a number in the domain [0, 255].
+
+    255 = 0xFF, which is the largest value for any component of an RGB(A) number.
+    """
     try:
         value = int(arg)
     except ValueError:
