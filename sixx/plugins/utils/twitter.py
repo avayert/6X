@@ -42,7 +42,6 @@ def fix_content(tweet, media):
 
 
 def build_embed(tweet, media):
-    print(tweet)
     user = tweet['user']
     base = 'https://twitter.com/{0[screen_name]}'.format(user)
 
