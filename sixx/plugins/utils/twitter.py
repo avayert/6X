@@ -1,10 +1,19 @@
 import asks
-import curious
 import logging
+from curious import Embed, Member
 
 from sixx.credentials import twitter
 
 logger = logging.getLogger('6X')
+
+
+class TweetEmbed(Embed):
+    @classmethod
+    def from_member(cls, member: Member):
+        embed = cls(colour=member.colour)
+        embed.set_footer(text='Posted to Discord by {0.name}'.format(member),
+                         icon_url=str(member.user.avatar_url.as_format('png')))
+        return embed
 
 
 def fix_content(tweet):
@@ -43,14 +52,19 @@ def fix_content(tweet):
     return content
 
 
-def build_embed(tweet, media):
+def build_embed(tweet, author, media=None):
+    if media is None:
+        media = tweet.get('extended_entities', {}).get('media', [])
+
     user = tweet['user']
     base = 'https://twitter.com/{0[screen_name]}'.format(user)
 
-    embed = curious.Embed(description=fix_content(tweet), url=base + '/status/' + tweet['id_str'])
+    embed = TweetEmbed.from_member(author)
+    embed.description = fix_content(tweet)
+    embed.url = base + '/status/' + tweet['id_str']
 
     embed.set_author(url=base, icon_url=user['profile_image_url_https'],
-                     name='{0[name]} ({0[screen_name]})'.format(user))
+                     name='{0[name]} (@{0[screen_name]})'.format(user))
 
     embed.add_field(name='Retweets', value=tweet['retweet_count'])
     embed.add_field(name='Likes', value=tweet['favorite_count'])
@@ -74,6 +88,8 @@ async def get_tweet(id: str) -> dict:
         params={'id': id, 'tweet_mode': 'extended'}  # Holy SHIT the twitter API sucks,,,,,
     )
     json = resp.json()
+
+    logger.debug(f'Twitter API response for tweet id {id}: {json}')
 
     errors = json.get('errors')
     if errors:

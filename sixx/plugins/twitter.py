@@ -1,12 +1,23 @@
 import curio
 import logging
 import re
-from curious import event, EventContext, Embed
+from curious import event, EventContext
 from curious.commands import Plugin
+from curious.exc import NotFound
 
 from sixx.plugins.utils import twitter
+from sixx.plugins.utils.twitter import TweetEmbed
 
-tweet_pattern = re.compile(r'(?:^|\W)https?://(?:mobile\.)?twitter\.com/\S+/(\d+)(?:$|\W)')
+# ide-noformat
+tweet_pattern = re.compile(r'(?P<before>^|\s)'   # Match start of string or whitespace
+                           r'(?P<url>https?://'  # Starts a capture group `url` 
+                           r'(?:mobile\.)?'      # Mobile links start with "mobile."
+                           r'twitter\.com/\S+/'  # Match "twitter.com/username/"
+                           r'(?P<id>\d+))'       # Match the twitter status ID
+                           r'(?:\?.*?=.*?)*'     # Ignores URL parameters (most common is ?s=num)
+                           r'(?P<after>$|\s)'    # Match end of string or whitespace
+                           )
+# ide-format
 tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
 
 all_but_first = slice(1, None, None)
@@ -33,32 +44,42 @@ class Twitter(Plugin):
             return
 
         try:
-            tweet = await twitter.get_tweet(tweet_match.group(1))
+            tweet = await twitter.get_tweet(tweet_match.group('id'))
         except ValueError:
             logger.exception('ValueError raised in parse_tweets')
             return
 
         media = tweet.get('extended_entities', {}).get('media', [])
         images = media[all_but_first]
+        author = message.author
 
-        embed = twitter.build_embed(tweet, media)
-        embed.set_footer(text='Posted to discord by {0.name}'.format(message.author),
-                         icon_url=str(message.author.user.avatar_url))
-        embed.colour = message.author.colour
+        embed = twitter.build_embed(tweet, author, media)
 
-        async with curio.TaskGroup() as group:
-            await group.spawn(message.delete())
-            await group.spawn(
-                message.channel.messages.send(f'<{tweet_match.group(0)}>', embed=embed))
+        try:
+            async with curio.TaskGroup() as group:
+                def replace(match):
+                    before, after, url = [match.group(name) for name in 'before after url'.split()]
+                    return f'{before}<{url}>{after}'
 
-        embed = Embed()
-        embed.set_footer(text='Posted to Discord by {0.name}'.format(message.author),
-                         icon_url=str(message.author.user.avatar_url))
-        embed.colour = message.author.colour
+                await group.spawn(message.delete())
+                await group.spawn(
+                    message.channel.messages.send(tweet_pattern.sub(replace, await message.clean_content()),
+                                                  embed=embed))
+        except curio.TaskGroupError as e:
+            ignore = (NotFound,)
 
+            for error in e.errors:
+                if error in ignore:
+                    continue
+                logger.error(f'Unhandled exception: {e}')
+
+        embed = TweetEmbed.from_member(author)
         for image in images:
             embed.set_image(image_url=image['media_url_https'])
             await message.channel.messages.send(embed=embed)
 
         if tweet['is_quote_status']:
-            await message.channel.messages.send(tweet_fmt.format(tweet['quoted_status']))
+            quoted_tweet = tweet['quoted_status']
+            embed = twitter.build_embed(quoted_tweet, author)
+
+            await message.channel.messages.send('Quoted tweet:', embed=embed)
