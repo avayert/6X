@@ -1,42 +1,45 @@
-from collections import namedtuple
-
 import asks
 import curious
-import re
+import logging
 
 from sixx.credentials import twitter
 
-format_map = namedtuple('fmt', 'fmt attr_name')
+logger = logging.getLogger('6X')
 
 
 def fix_content(tweet):
     content = tweet['full_text']
     offset = 0
-    entities = []
 
-    for entity_type, entries in tweet['entities'].items():
-        # TODO handle this in the future I don't care enough right now
-        if entity_type == 'symbols':
-            continue
-        for entry in entries:
-            entry.update(entity_type=entity_type)
-            entities.append(entry)
+    entities = [
+        {**items, 'entity_type': entity_type}
+        for entity_type, entities in tweet['entities'].items()
+        for items in entities
+    ]
 
     formats = {
-        'hashtags': format_map('[#{0}](https://twitter.com/hashtag/{0})', 'text'),
-        'user_mentions': format_map('[@{0}](https://twitter.com/{0})', 'screen_name'),
-        'urls': format_map('{0}', 'expanded_url'),
-        'media': format_map('', 'url')
+        'user_mentions': ('[@{0}](https://twitter.com/{0})', 'screen_name'),
+        'hashtags': ('[#{0}](https://twitter.com/hashtag/{0})', 'text'),
+        'urls': ('{0}', 'expanded_url'),
+        'media': ('', 'url')
     }
 
     for entry in sorted(entities, key=lambda e: e['indices']):
-        start, end = map(lambda index: index + offset, entry['indices'])
+        start, end = entry['indices']
+        entity_type = entry['entity_type']
 
-        fm = formats[entry['entity_type']]
-        new = fm.fmt.format(entry[fm.attr_name])
+        fmt, attr = formats.get(entity_type, (None, None))
 
-        content = content[:start] + new + content[end:]
-        offset += len(new) - (end - start)
+        if fmt is None:
+            logger.warning(f'Unhandled entity type: {entity_type}')
+            continue
+
+        replacement = fmt.format(entry[attr])
+
+        content = content[:start + offset] + replacement + content[end + offset:]
+
+        offset += len(replacement) - (end - start)
+
     return content
 
 
