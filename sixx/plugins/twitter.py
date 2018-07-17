@@ -18,8 +18,6 @@ tweet_pattern = re.compile(r'(?P<before>^|\s)'   # Match start of string or whit
                            r'(?P<after>$|\s)'    # Match end of string or whitespace
                            )
 # ide-format
-tweet_fmt = 'https://twitter.com/{0[user][screen_name]}/status/{0[id]}'
-
 all_but_first = slice(1, None, None)
 
 logger = logging.getLogger('6X')
