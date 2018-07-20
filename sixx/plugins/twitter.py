@@ -61,7 +61,7 @@ class Twitter(Plugin):
 
                 await group.spawn(message.delete())
                 await group.spawn(
-                    message.channel.messages.send(tweet_pattern.sub(replace, await message.clean_content()),
+                    message.channel.messages.send(tweet_pattern.sub(replace, await message.content),
                                                   embed=embed))
         except curio.TaskGroupError as e:
             ignore = (NotFound,)
