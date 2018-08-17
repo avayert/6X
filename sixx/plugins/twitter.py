@@ -48,6 +48,11 @@ class Twitter(Plugin):
             return
 
         media = tweet.get('extended_entities', {}).get('media', [])
+
+        # Don't re-send videos
+        if any(image['type'] in {'video', 'animated_gif'} for image in media):
+            return
+
         images = media[all_but_first]
         author = message.author
 
