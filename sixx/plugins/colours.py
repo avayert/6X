@@ -101,7 +101,7 @@ class Colours(Plugin):
 
         # TODO make this event configured per-server
         # TODO make channel configurable per server
-        channel = ctx.bot.find_channel(348933705923952641)
+        channel = new.guild.system_channel
 
         # Weird
         if channel is None:

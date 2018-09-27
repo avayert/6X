@@ -25,9 +25,8 @@ class Miscellaneous(Plugin):
         await ctx.channel.messages.send(random.choice(self.waluigis))
 
     async def waluigi_event(self):
-        await self.client.wait_for('ready')
-
-        channel = self.client.find_channel(348933705923952641)
+        guild = self.client.guilds.get(198101180180594688)
+        channel = guild.system_channel
 
         while True:
             seconds = random.randint(60 * 60, 60 * 60 * 18)
