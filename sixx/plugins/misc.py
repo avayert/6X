@@ -1,5 +1,7 @@
 import curio
 import random
+import re
+from curious import event, Guild
 from curious.commands import Plugin, command, Context
 
 
@@ -35,3 +37,17 @@ class Miscellaneous(Plugin):
             message = 'Wah! Wah! ' + random.choice(self.waluigis)
             with open('sixx/data/wah.jpg', 'rb') as f:
                 await channel.messages.upload(f, filename='wah.jpg', message_content=message)
+
+    @event('guild_update')
+    async def watch_guild_name(self, ctx, old: Guild, new: Guild):
+        if old.id != 198101180180594688:
+            return
+
+        if old.name == new.name:
+            return
+
+        def escape(name):
+            return re.sub(r'([*`_~\\])', r'\\\1', name)
+
+        old_name, new_name = [escape(guild.name) for guild in (old, new)]
+        await new.system_channel.messages.send(f'"{old_name}" is now called "**{new_name}**"')
