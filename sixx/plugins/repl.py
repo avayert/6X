@@ -67,6 +67,7 @@ class REPL(Plugin):
             'author': ctx.author,
             'manager': ctx.manager
         }
+        env.update(sys.modules)
 
         dest = ctx.channel.messages
 
