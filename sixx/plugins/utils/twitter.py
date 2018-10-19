@@ -1,6 +1,8 @@
 import asks
+import html
 import logging
 from curious import Embed, Member
+from pprint import pformat
 
 from sixx.credentials import twitter
 
@@ -49,7 +51,7 @@ def fix_content(tweet):
 
         offset += len(replacement) - (end - start)
 
-    return content
+    return html.unescape(content)
 
 
 def build_embed(tweet, author, media=None):
@@ -88,8 +90,7 @@ async def get_tweet(id: str) -> dict:
         params={'id': id, 'tweet_mode': 'extended'}  # Holy SHIT the twitter API sucks,,,,,
     )
     json = resp.json()
-
-    logger.debug(f'Twitter API response for tweet id {id}: {json}')
+    logger.debug(f'Twitter API response for tweet id {id}: {pformat(json)}')
 
     errors = json.get('errors')
     if errors:
